@@ -2,16 +2,16 @@ import {
   EventStreamContentType,
   fetchEventSource,
 } from '@ai-zen/node-fetch-event-source';
+import { mergeHeaders } from 'openapi-fetch';
 
 import { TypedReadable } from '../utils/stream.js';
 import { BaseError, HttpError, InternalError } from '../errors.js';
 import { safeParseJson } from '../helpers/common.js';
-import { RawHeaders } from '../client.js';
 
 export interface SteamingApiClient {
   stream: <T>(opts: {
     url: string;
-    headers?: RawHeaders;
+    headers?: Headers;
     body?: any;
     signal?: AbortSignal;
   }) => TypedReadable<T>;
@@ -19,7 +19,7 @@ export interface SteamingApiClient {
 
 export function createStreamingApiClient(clientOptions: {
   baseUrl?: string;
-  headers?: RawHeaders;
+  headers?: Headers;
 }): SteamingApiClient {
   return {
     stream: function fetchSSE<T>({
@@ -69,11 +69,11 @@ export function createStreamingApiClient(clientOptions: {
       fetchEventSource(new URL(url, clientOptions.baseUrl).toString(), {
         method: 'POST',
         body: JSON.stringify(body),
-        headers: {
-          ...clientOptions.headers,
-          ...headers,
-          'Content-Type': 'application/json',
-        },
+        headers: Object.fromEntries(
+          (mergeHeaders(clientOptions.headers, headers, {
+            'Content-Type': 'application/json',
+          }) as any), // Types are incomplete, support is there in Node 18 https://developer.mozilla.org/en-US/docs/Web/API/Headers
+        ),
         signal: delegatedController.signal,
         onclose: onClose,
         async onopen(response) {

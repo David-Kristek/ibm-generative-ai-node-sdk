@@ -18,13 +18,10 @@ import {
   SteamingApiClient,
   createStreamingApiClient,
 } from './api/streaming-client.js';
-
-export type RawHeaders = Record<string, string>;
-
 export interface Configuration {
   apiKey?: string;
   endpoint?: string;
-  headers?: RawHeaders;
+  headers?: Headers;
 }
 
 export type Options = { signal?: AbortSignal };
@@ -46,13 +43,11 @@ export class Client {
 
     const agent = version ? `node-sdk/${version}` : 'node-sdk';
 
-    const headers = {
-      'User-Agent': agent,
-      'X-Request-Origin': agent,
-      ...config.headers,
-      Accept: 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    };
+    const headers = new Headers(config.headers);
+    headers.set('user-agent', agent);
+    headers.set('x-request-origin', agent);
+    headers.set('authorization', `Bearer ${apiKey}`);
+
     this._client = createApiClient({
       baseUrl: endpoint,
       headers,
