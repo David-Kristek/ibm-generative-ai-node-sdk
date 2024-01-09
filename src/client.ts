@@ -13,8 +13,11 @@ import {
   createApiClient,
 } from './api/client.js';
 import { clientErrorWrapper } from './utils/errors.js';
-import { OmitVersion } from './utils/types.js';
-import { ApiEventClient, createApiEventClient } from './api/event-client.js';
+import type { OmitVersion } from './utils/types.js';
+import {
+  SteamingApiClient,
+  createStreamingApiClient,
+} from './api/streaming-client.js';
 
 export type RawHeaders = Record<string, string>;
 
@@ -27,8 +30,8 @@ export interface Configuration {
 export type Options = { signal?: AbortSignal };
 
 export class Client {
-  readonly #client: ApiClient;
-  readonly #eventClient: ApiEventClient;
+  protected readonly _client: ApiClient;
+  protected readonly _streamingClient: SteamingApiClient;
 
   constructor(config: Configuration = {}) {
     const endpoint = config.endpoint ?? lookupEndpoint();
@@ -50,12 +53,12 @@ export class Client {
       Accept: 'application/json',
       Authorization: `Bearer ${apiKey}`,
     };
-    this.#client = createApiClient({
+    this._client = createApiClient({
       baseUrl: endpoint,
       headers,
       fetch: fetchRetry(fetch) as any, // https://github.com/jonbern/fetch-retry/issues/89
     });
-    this.#eventClient = createApiEventClient({
+    this._streamingClient = createStreamingApiClient({
       baseUrl: endpoint,
       headers,
     });
@@ -68,7 +71,7 @@ export class Client {
     opts?: Options,
   ) {
     return clientErrorWrapper(
-      this.#client.GET('/v2/models', {
+      this._client.GET('/v2/models', {
         ...opts,
         params: {
           query: {
@@ -85,7 +88,7 @@ export class Client {
     opts?: Options,
   ) {
     return clientErrorWrapper(
-      this.#client.GET('/v2/models/{id}', {
+      this._client.GET('/v2/models/{id}', {
         ...opts,
         params: {
           path: input,
@@ -139,7 +142,7 @@ export class Client {
       },
     });
 
-    this.#eventClient
+    this._streamingClient
       .stream<EventMessage>({
         url: '/v2/text/generation_stream?version=2023-11-22',
         body: input,

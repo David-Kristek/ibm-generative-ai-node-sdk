@@ -2,7 +2,7 @@ import createClient, { FetchOptions, FetchResponse } from 'openapi-fetch';
 
 import { FilterKeys } from '../utils/types.js';
 
-import { components, paths } from './schema.js';
+import { paths } from './schema.js';
 
 export type ApiClient = ReturnType<typeof createClient<paths>>;
 
@@ -13,15 +13,15 @@ export function createApiClient(
 }
 
 export type ApiClientOptions<
-  METHOD extends keyof ApiClient,
-  PATH extends Parameters<ApiClient[METHOD]>[0],
-> = FetchOptions<FilterKeys<paths[PATH], Lowercase<METHOD>>>;
+  Method extends keyof ApiClient,
+  Path extends Parameters<ApiClient[Method]>[0],
+> = FetchOptions<FilterKeys<paths[Path], Lowercase<Method>>>;
 
 export type ApiClientResponse<
-  METHOD extends keyof ApiClient,
-  PATH extends Parameters<ApiClient[METHOD]>[0] = Parameters<
-    ApiClient[METHOD]
+  Method extends keyof ApiClient,
+  Path extends Parameters<ApiClient[Method]>[0] = Parameters<
+    ApiClient[Method]
   >[0],
-> = FetchResponse<FilterKeys<paths[PATH], Lowercase<METHOD>>>;
+> = FetchResponse<FilterKeys<paths[Path], Lowercase<Method>>>;
 
 export type ApiError = any; // TODO components['schemas']['BaseErrorResponse'];

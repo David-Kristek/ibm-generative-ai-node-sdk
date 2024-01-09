@@ -8,7 +8,7 @@ import { BaseError, HttpError, InternalError } from '../errors.js';
 import { safeParseJson } from '../helpers/common.js';
 import { RawHeaders } from '../client.js';
 
-export interface ApiEventClient {
+export interface SteamingApiClient {
   stream: <T>(opts: {
     url: string;
     headers?: RawHeaders;
@@ -17,17 +17,17 @@ export interface ApiEventClient {
   }) => TypedReadable<T>;
 }
 
-export function createApiEventClient(clientOptions: {
+export function createStreamingApiClient(clientOptions: {
   baseUrl?: string;
   headers?: RawHeaders;
-}): ApiEventClient {
+}): SteamingApiClient {
   return {
     stream: function fetchSSE<T>({
       url,
       headers,
       body,
       signal,
-    }: Parameters<ApiEventClient['stream']>[0]) {
+    }: Parameters<SteamingApiClient['stream']>[0]) {
       const outputStream = new TypedReadable<T>({
         autoDestroy: true,
         objectMode: true,

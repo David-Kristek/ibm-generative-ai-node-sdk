@@ -1,5 +1,4 @@
 import { FetchResponse } from 'openapi-fetch';
-import isObject from 'lodash/isObject.js';
 
 import { HttpError, InternalError, NetworkError } from '../errors.js';
 
@@ -15,6 +14,7 @@ const ServiceUnavailableErrorCodes = new Set([
   'ECONNREFUSED',
   'ENETUNREACH', // macOS
   'EHOSTUNREACH', // Linux
+  'UND_ERR_CONNECT_TIMEOUT',
 ]);
 function isServiceError(err: unknown) {
   const code = (err as any)?.code;

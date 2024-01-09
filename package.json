@@ -56,7 +56,7 @@
     "prepack": "yarn build && pinst --disable",
     "postinstall": "husky install",
     "postpack": "pinst --enable",
-    "generate": "npx openapi-typescript https://bam-api.res.ibm.com/docs/json -o ./src/api/schema.d.ts",
+    "generate": "./scripts/generate.sh",
     "example:run": "ts-node -r dotenv-flow/config",
     "example:generate": "yarn run example:run examples/generate.ts",
     "example:tune": "yarn run example:run examples/tune.ts",
@@ -72,7 +72,7 @@
     "@commitlint/cli": "^18.0.0",
     "@commitlint/config-conventional": "^18.0.0",
     "@types/lodash": "^4.14.200",
-    "@types/node": "^20.8.8",
+    "@types/node": "18.18.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitest/coverage-c8": "^0.31.2",
@@ -103,9 +103,6 @@
     "openapi-fetch": "^0.8.1",
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
-  },
-  "engines": {
-    "node": ">=18.12.0"
   },
   "lint-staged": {
     "*.{cjs,js,jsx,ts,tsx}": [
